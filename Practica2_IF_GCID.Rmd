@@ -1,0 +1,460 @@
+---
+title: "Práctica_2_IF_GCID"
+author: "Nuria Oviedo y Sofía Fontan"
+date: "2024-11-28"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introducción
+
+## 1. Log-verosimilitud de \( p \)
+
+
+La *función de verosimilitud* y la *log-verosimilitud* son herramientas fundamentales en estadística para evaluar qué tan bien un conjunto de parámetros (\(\theta\)) explica los datos observados (\(x\)).
+
+### Función de Verosimilitud:
+
+La *función de verosimilitud* (\(L(\theta|x)\)) mide la probabilidad de observar un conjunto de datos, dado un conjunto de parámetros específicos. Para \(n\) datos (\(x_1, x_2, \dots, x_n\)), la verosimilitud se calcula como el producto de las funciones de densidad (o de probabilidad) para cada dato individual:
+$$
+\[
+L(\theta|x) = f(x|\theta) = \prod_{i=1}^{n} f(x_i|\theta)
+\]
+$$
+
+donde \(f(x_i|\theta)\) es la función de densidad (o de probabilidad) de \(x_i\) dado \(\theta\).
+
+### Log-Verosimilitud:
+Debido a que la función de verosimilitud puede implicar productos de muchos términos, es más práctico trabajar con su logaritmo natural, conocido como la *log-verosimilitud*:
+
+$$
+\[
+\ell(\theta|x) = \log L(\theta|x) = \sum_{i=1}^{n} \log f(x_i|\theta)
+\]
+$$
+
+
+
+La función de verosimilitud para \( n \) observaciones Bernoulli independientes es:
+$$
+L(p) = \prod_{i=1}^n p^{x_i}(1-p)^{1-x_i}
+$$
+
+Al tomar el logaritmo natural de la función de verosimilitud, obtenemos:
+$$
+\ell(p) = \sum_{i=1}^n \left( x_i \log(p) + (1-x_i) \log(1-p) \right)
+$$
+
+Agrupando términos:
+$$
+\ell(p) = \left(\sum_{i=1}^n x_i \right) \log(p) + \left( n - \sum_{i=1}^n x_i \right) \log(1-p)
+$$
+
+Definiendo \( r = \sum_{i=1}^n x_i \), la log-verosimilitud se puede expresar como:
+$$
+\ell(p) = r \log\left(\frac{p}{1-p}\right) + n \log(1-p)
+$$
+
+Dado que \( r \) es la suma de \( n \) variables Bernoulli i.i.d., su distribución es:
+$$
+r \sim \text{Binomial}(n, p)
+$$
+
+## 2. Información de Fisher para \( p \)
+
+La información de Fisher está definida como:
+$$
+I(p) = -\mathbb{E}\left[\frac{\partial^2}{\partial p^2} \ell(p)\right]
+$$
+
+Para la log-verosimilitud obtenida:
+$$
+\frac{\partial^2 \ell(p)}{\partial p^2} = -\frac{r}{p^2} - \frac{n-r}{(1-p)^2}
+$$
+
+El valor esperado de \( r \) es \( \mathbb{E}[r] = np \). Sustituyendo, obtenemos:
+$$
+\mathbb{E}\left[\frac{\partial^2 \ell(p)}{\partial p^2}\right] = -\frac{np}{p^2} - \frac{n(1-p)}{(1-p)^2}
+$$
+
+Por lo tanto, la información de Fisher es:
+$$
+I(p) = \frac{n}{p(1-p)}
+$$
+
+## 3. Expresiones de \( Z \) y \( V \)
+
+### Parametrización 1: \( \theta = \log\left(\frac{p(1-p_0)}{p_0(1-p)}\right) \)
+La derivada de \( \theta \) respecto a \( p \) es:
+$$
+\frac{\partial \theta}{\partial p} = \frac{1}{p} - \frac{1}{1-p}
+$$
+
+El estadístico \( Z \) está dado por:
+$$
+Z = \frac{\partial \ell(p)}{\partial p} \bigg|_{\theta=0} \cdot \frac{\partial \theta}{\partial p}
+$$
+
+La información \( V \) se calcula como:
+$$
+V = \left(\frac{\partial \theta}{\partial p}\right)^2 I(p)
+$$
+
+### Parametrización 2: \( \theta = p - p_0 \)
+La derivada de \( \theta \) respecto a \( p \) es:
+$$
+\frac{\partial \theta}{\partial p} = 1
+$$
+
+El estadístico \( Z \) se define como:
+$$
+Z = \frac{\partial \ell(p)}{\partial p} \bigg|_{\theta=0}
+$$
+
+Y la información \( V \) es:
+$$
+V = I(p)
+$$
+
+### Parametrización 3: \( \theta = \arcsin\sqrt{p} - \arcsin\sqrt{p_0} \)
+La derivada de \( \theta \) respecto a \( p \) es:
+$$
+\frac{\partial \theta}{\partial p} = \frac{1}{2\sqrt{p(1-p)}}
+$$
+
+El estadístico \( Z \) está dado por:
+$$
+Z = \frac{\partial \ell(p)}{\partial p} \bigg|_{\theta=0} \cdot \frac{\partial \theta}{\partial p}
+$$
+
+La información \( V \) se calcula como:
+$$
+V = \left(\frac{\partial \theta}{\partial p}\right)^2 I(p)
+$$
+
+4.
+
+```{r}
+# Parámetros iniciales
+p0 <- 0.3
+n <- 1000
+r <- 300  # Suma de éxitos observados, ajusta según simulación
+
+# Función para calcular información de Fisher
+fisher_information <- function(p, n) {
+  n / (p * (1 - p))
+}
+
+# Función para calcular Z y V en cada parametrización
+calculate_Z_V <- function(p, p0, n, r) {
+  I_p <- fisher_information(p, n)
+  
+  # Parametrización 1
+  Z1 <- (r - n * p0) / (p0 * (1 - p0))
+  V1 <- I_p * ((1 / p - 1 / (1 - p))^2)
+  
+  # Parametrización 2
+  Z2 <- (r - n * p0) / sqrt(p0 * (1 - p0))
+  V2 <- I_p
+  
+  # Parametrización 3
+  Z3 <- (r - n * p0) / (p0 * (1 - p0)) * (1 / (2 * sqrt(p * (1 - p))))
+  V3 <- I_p * (1 / (2 * sqrt(p * (1 - p))))^2
+  
+  list(Z1 = Z1, V1 = V1, Z2 = Z2, V2 = V2, Z3 = Z3, V3 = V3)
+}
+
+# Ejemplo con p = 0.35
+result <- calculate_Z_V(0.35, p0, n, r)
+print(result)
+
+# Simulación de hipótesis
+simulate_hypothesis <- function(n, p, p0, alpha = 0.05) {
+  successes <- rbinom(1, n, p)
+  I_p <- fisher_information(p0, n)
+  Z <- (successes - n * p0) / sqrt(n * p0 * (1 - p0))
+  p_value <- 1 - pnorm(Z)
+  decision <- ifelse(p_value < alpha, "Rechazar H0", "No rechazar H0")
+  
+  list(Z = Z, p_value = p_value, decision = decision)
+}
+
+# Simulación
+set.seed(123)  # Para reproducibilidad
+simulation_result <- simulate_hypothesis(n, 0.35, p0)
+print(simulation_result)
+
+```
+
+## Contraste de hipótesis
+
+
+```{r}
+# Configuración inicial
+set.seed(123) # Para reproducibilidad
+
+# Función para calcular V según la parametrización
+calcular_V <- function(n) {
+  V <- 1 / n  # Ejemplo: varianza inversamente proporcional al tamaño muestral
+  return(V)
+}
+
+# Función para calcular Z
+calcular_Z <- function(theta, V) {
+  Z <- theta * V  # Definición del estadístico Z
+  return(Z)
+}
+
+# Parámetros iniciales
+n <- 100  # Tamaño muestral
+theta <- 0.05  # Valor del parámetro de interés
+
+# Cálculo de V
+V <- calcular_V(n)
+cat("El valor de V es:", V, "\n")
+
+# Cálculo de Z
+Z <- calcular_Z(theta, V)
+cat("El valor de Z es:", Z, "\n")
+
+```
+### Conclusión del ejercicio 4
+
+**Resultados clave:**
+
+1. **Cálculo de \( V \):**  
+   El valor de \( V \) calculado es **0.01**, lo cual indica que la variabilidad del modelo es baja debido al tamaño muestral (\( n = 100 \)). Esto refleja que al aumentar el tamaño de la muestra, la incertidumbre asociada a las estimaciones disminuye.
+
+2. **Cálculo de \( Z \):**  
+   El valor del estadístico \( Z \) es **\( 5 \times 10^{-4} \)**. Este resultado se obtuvo al multiplicar el valor de \( \theta = 0.05 \) por \( V = 0.01 \). El valor pequeño de \( Z \) sugiere que el efecto de \( \theta \) en esta parametrización es moderado.
+
+---
+
+**Interpretación práctica:**  
+El cálculo de \( V \) y \( Z \) confirma que, para muestras suficientemente grandes (\( n \)), la distribución de \( Z \) tiende a ser aproximadamente Normal con media \( \theta \times V \) y varianza \( V \). Estos resultados son útiles para construir inferencias estadísticas, ya que permiten simplificar la complejidad del modelo original y trabajar con aproximaciones basadas en la distribución Normal.
+
+
+```{r}
+# Configuración inicial
+set.seed(123) # Para reproducibilidad
+
+# Parámetros del problema
+n <- 1000  # Tamaño muestral
+p0 <- 0.3  # Proporción bajo H0
+p_observado <- 0.35  # Proporción observada en la muestra (ejemplo)
+alpha <- 0.05  # Nivel de significancia
+
+# Simulación de la muestra binomial
+muestra <- rbinom(1, size = n, prob = p0) / n
+cat("Proporción simulada bajo H0:", muestra, "\n")
+
+# Estadístico Z
+Z <- (p_observado - p0) / sqrt(p0 * (1 - p0) / n)
+cat("Valor del estadístico Z:", Z, "\n")
+
+# Cálculo del p-valor
+p_valor <- 1 - pnorm(Z)
+cat("P-valor:", p_valor, "\n")
+
+# Decisión del contraste
+if (p_valor < alpha) {
+  cat("Rechazamos H0: Hay evidencia suficiente para aceptar H1.\n")
+} else {
+  cat("No rechazamos H0: No hay evidencia suficiente para aceptar H1.\n")
+}
+
+
+```
+### Conclusión del ejercicio 5
+
+**Resultados clave:**
+
+1. **Proporción simulada bajo \( H_0 \):**  
+   La proporción obtenida a partir de la simulación bajo la hipótesis nula \( H_0: p = 0.3 \) fue **0.29**, muy cercana al valor esperado (\( 0.3 \)). Esto indica que la simulación es consistente con la distribución definida bajo \( H_0 \).
+
+2. **Estadístico \( Z \):**  
+   El valor del estadístico fue **\( Z = 3.4503 \)**. Este mide cuán lejos está la proporción observada (\( p_{observado} = 0.35 \)) de la proporción propuesta bajo \( H_0 \). El valor alto de \( Z \) sugiere una diferencia significativa.
+
+3. **P-valor:**  
+   El \( p \)-valor calculado es **0.00028**, que es mucho menor que el nivel de significancia usual \( \alpha = 0.05 \). Esto implica que la probabilidad de observar una diferencia tan extrema o mayor, suponiendo que \( H_0 \) sea verdadera, es prácticamente nula.
+
+4. **Decisión:**  
+   Dado que el \( p \)-valor es menor que \( \alpha \), se **rechaza \( H_0 \)**. Por lo tanto, hay evidencia suficiente para aceptar \( H_1: p > 0.3 \).
+
+---
+
+**Interpretación práctica:**  
+El análisis demuestra que la proporción observada (\( p = 0.35 \)) es significativamente mayor que \( 0.3 \). Esto sugiere que, en este contexto, la hipótesis alternativa (\( H_1 \)) es más plausible. Por lo tanto, hay evidencia estadística para concluir que la proporción verdadera es mayor al 30%, apoyando la afirmación de \( H_1 \).
+
+
+-----
+
+
+## Cálculo del Tamaño Muestral para el Contraste de Hipótesis
+
+En este análisis, queremos calcular el tamaño muestral \( n \) necesario para realizar un contraste de hipótesis bajo los siguientes supuestos:
+
+- \( H_0: p = 0.3 \)
+- \( H_1: p > 0.3 \)
+
+Usamos el estadístico \( Z \) como herramienta de contraste, con un nivel de significancia \( \alpha \) y una potencia de \( 1 - \beta \). El procedimiento sigue los siguientes pasos:
+
+---
+
+#### Fórmula General
+
+El tamaño muestral \( n \) se calcula a partir de la cantidad de información \( V \), que está relacionada directamente con \( n \). Para un contraste unilateral, la fórmula para \( V \) es:
+
+\[
+V = \frac{z_{\alpha} + z_{\beta}}{\theta_R^2},
+\]
+
+donde:
+- \( z_{\alpha} \): Percentil de una distribución normal estándar correspondiente al nivel de significancia \( \alpha \).
+- \( z_{\beta} \): Percentil correspondiente a la potencia \( 1 - \beta \).
+- \( \theta_R \): Diferencia mínima que se desea detectar entre \( p \) y \( p_0 \) (es decir, \( \theta_R = p_{observado} - p_0 \)).
+
+Reorganizando para \( n \), dado que \( V = \frac{1}{n} \), obtenemos:
+
+\[
+n = \frac{(z_{\alpha} + z_{\beta})^2}{\theta_R^2}.
+\]
+
+---
+
+#### Implementación en R
+
+El siguiente código en R calcula el tamaño muestral necesario para este contraste. Se consideran valores estándar para \( \alpha \) y \( \beta \) (\( \alpha = 0.05 \), potencia \( 1 - \beta = 0.8 \)) y una diferencia mínima detectable \( \theta_R \).
+
+```{r}
+
+# Configuración inicial
+alpha <- 0.05  # Nivel de significancia
+beta <- 0.2    # Complemento de la potencia (1 - beta = 0.8)
+theta_R <- 0.05 # Diferencia mínima deseada (p_observado - p0)
+
+# Cálculo de los percentiles de la distribución Normal
+z_alpha <- qnorm(1 - alpha)  # Percentil para alpha
+z_beta <- qnorm(1 - beta)    # Percentil para beta
+
+# Fórmula para el tamaño muestral
+n <- (z_alpha + z_beta)^2 / theta_R^2
+
+# Resultados
+cat("El tamaño muestral necesario es:", ceiling(n), "\n")
+```
+El tamaño muestral n necesario para este contraste depende de los parámetros establecidos:
+
+Nivel de significancia (α=0.05),
+Potencia (1−β=0.8),
+Diferencia mínima detectable (θR=0.05).
+
+
+### 7. Estimación del tamaño muestral necesario
+
+Queremos calcular el tamaño de muestra \( n \) necesario para detectar una diferencia entre \( p_0 = 0.003 \) y \( p = 0.006 \), con un nivel de significancia \( \alpha = 0.025 \) y una potencia \( 1 - \beta = 0.80 \).
+
+Usamos la fórmula general del tamaño muestral para contrastes unilaterales:
+
+\[
+n = \frac{(z_{\alpha} + z_{\beta})^2}{\theta_R^2},
+\]
+
+donde:
+- \( z_{\alpha} \): Percentil de la normal estándar para \( \alpha = 0.025 \),
+- \( z_{\beta} \): Percentil para \( 1 - \beta = 0.80 \),
+- \( \theta_R = p - p_0 = 0.006 - 0.003 = 0.003 \).
+
+#### Código en R para el cálculo
+
+```{r}
+
+# Parámetros del problema
+alpha <- 0.025    # Nivel de significancia
+beta <- 0.2       # Complemento de la potencia (1 - beta = 0.8)
+p0 <- 0.003       # Proporción bajo H0
+p <- 0.006        # Proporción deseada
+theta_R <- p - p0 # Diferencia mínima detectable
+
+# Cálculo de los percentiles de la distribución normal
+z_alpha <- qnorm(1 - alpha)  # Percentil para alpha
+z_beta <- qnorm(1 - beta)    # Percentil para beta
+
+# Fórmula para el tamaño muestral
+n <- (z_alpha + z_beta)^2 / theta_R^2
+
+# Resultado
+cat("El tamaño muestral necesario es:", ceiling(n), "\n")
+
+
+```
+
+
+### 8. Estimación de errores tipo I y potencia del contraste
+
+En este apartado, se calculan dos métricas fundamentales para evaluar un contraste de hipótesis:
+
+- **Error tipo I (\( \alpha \)):**  
+  Es la probabilidad de rechazar la hipótesis nula (\( H_0 \)) cuando esta es verdadera. Esto ocurre cuando el valor observado del estadístico de prueba \( Z \) excede el valor crítico establecido por \( \alpha \).
+
+- **Potencia del contraste (\( 1 - \beta \)):**  
+  Es la probabilidad de rechazar \( H_0 \) cuando la hipótesis alternativa (\( H_1 \)) es verdadera. Una alta potencia indica que el contraste es sensible para detectar una diferencia significativa entre \( p_0 \) y el valor deseado (\( p \)).
+
+Se utilizarán los valores de \( n \) calculados previamente y se evaluará el valor de \( Z \) bajo \( H_0 \) y \( H_1 \) para estimar estas probabilidades.
+
+```{r}
+# Valores de Z bajo H0 y H1
+Z_H0 <- sqrt(n) * (p0 - p0) / sqrt(p0 * (1 - p0))
+Z_H1 <- sqrt(n) * (p - p0) / sqrt(p0 * (1 - p0))
+
+# Error tipo I (bajo H0)
+alpha_real <- 1 - pnorm(Z_H0)
+cat("Error de tipo I (alpha):", alpha_real, "\n")
+
+# Potencia del test (bajo H1)
+potencia <- pnorm(Z_H1)
+cat("Potencia del test:", potencia, "\n")
+
+```
+
+
+
+---
+
+### 9. Contrastes adicionales: Chi-cuadrado y prueba exacta
+
+Además de calcular el tamaño muestral y los errores asociados, se aplicarán dos contrastes estadísticos adicionales para validar los resultados:
+
+1. **Test de chi-cuadrado sin corrección de continuidad:**  
+   Este test compara las frecuencias observadas y esperadas bajo \( H_0 \). Al no usar corrección de continuidad, el test es más sensible en muestras grandes. Se implementará con la función `chisq.test`, especificando que no se aplique corrección.
+
+```{r}
+# Valores de la muestra simulada
+n <- ceiling(n)         # Tamaño muestral redondeado
+r <- round(n * p)       # Casos observados de éxito
+
+# Test de chi-cuadrado sin corrección de continuidad
+chisq_result <- chisq.test(x = c(r, n - r), p = c(p0, 1 - p0), correct = FALSE)
+cat("Chi-cuadrado sin corrección:\n")
+print(chisq_result)
+
+```
+
+
+
+2. **Prueba exacta binomial:**  
+   La prueba exacta binomial evalúa directamente la probabilidad de obtener el número de éxitos observados o más, bajo \( H_0 \). Esta prueba es especialmente útil para tamaños muestrales pequeños y se implementa con la función `binom.test`.
+   
+```{r}
+# Prueba exacta binomial
+binom_result <- binom.test(r, n, p0, alternative = "greater")
+cat("Prueba exacta binomial:\n")
+print(binom_result)
+
+```
+
+

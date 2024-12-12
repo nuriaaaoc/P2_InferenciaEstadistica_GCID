@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introducción
 
-## 1. Log-verosimilitud de \( p \)
+### 1. Log-verosimilitud de \( p \)
 
 
 La *función de verosimilitud* y la *log-verosimilitud* son herramientas fundamentales en estadística para evaluar qué tan bien un conjunto de parámetros (\(\theta\)) explica los datos observados (\(x\)).
@@ -21,9 +21,7 @@ La *función de verosimilitud* y la *log-verosimilitud* son herramientas fundame
 
 La *función de verosimilitud* (\(L(\theta|x)\)) mide la probabilidad de observar un conjunto de datos, dado un conjunto de parámetros específicos. Para \(n\) datos (\(x_1, x_2, \dots, x_n\)), la verosimilitud se calcula como el producto de las funciones de densidad (o de probabilidad) para cada dato individual:
 $$
-\[
 L(\theta|x) = f(x|\theta) = \prod_{i=1}^{n} f(x_i|\theta)
-\]
 $$
 
 donde \(f(x_i|\theta)\) es la función de densidad (o de probabilidad) de \(x_i\) dado \(\theta\).
@@ -32,9 +30,8 @@ donde \(f(x_i|\theta)\) es la función de densidad (o de probabilidad) de \(x_i\
 Debido a que la función de verosimilitud puede implicar productos de muchos términos, es más práctico trabajar con su logaritmo natural, conocido como la *log-verosimilitud*:
 
 $$
-\[
+
 \ell(\theta|x) = \log L(\theta|x) = \sum_{i=1}^{n} \log f(x_i|\theta)
-\]
 $$
 
 
@@ -64,7 +61,7 @@ $$
 r \sim \text{Binomial}(n, p)
 $$
 
-## 2. Información de Fisher para \( p \)
+### 2. Información de Fisher para \( p \)
 
 La información de Fisher está definida como:
 $$
@@ -86,155 +83,225 @@ $$
 I(p) = \frac{n}{p(1-p)}
 $$
 
-## 3. Expresiones de \( Z \) y \( V \)
+### 3. Expresiones de \( Z \) y \( V \)
 
-### Parametrización 1: \( \theta = \log\left(\frac{p(1-p_0)}{p_0(1-p)}\right) \)
-La derivada de \( \theta \) respecto a \( p \) es:
-$$
-\frac{\partial \theta}{\partial p} = \frac{1}{p} - \frac{1}{1-p}
-$$
+En este ejercicio, vamos a calcular las expresiones de los estadísticos \( Z \) y \( V \) para tres diferentes parametrizaciones de \( \theta \) en un modelo Bernoulli. Estos estadísticos son fundamentales en los contrastes de hipótesis y tienen relación con la diferencia entre el parámetro de interés \( p \) y el valor de referencia \( p_0 \).
 
-El estadístico \( Z \) está dado por:
-$$
-Z = \frac{\partial \ell(p)}{\partial p} \bigg|_{\theta=0} \cdot \frac{\partial \theta}{\partial p}
-$$
+La cantidad \( V \) es la información de Fisher, que mide la precisión de la estimación del parámetro en una muestra.
 
-La información \( V \) se calcula como:
-$$
-V = \left(\frac{\partial \theta}{\partial p}\right)^2 I(p)
-$$
+Vamos a resolver cada caso paso a paso.
 
-### Parametrización 2: \( \theta = p - p_0 \)
-La derivada de \( \theta \) respecto a \( p \) es:
-$$
+### 1. Parámetro \( \theta = \log\left( \frac{p(1 - p_0)}{p_0(1 - p)} \right) \)
+
+Primero, consideramos la parametrización \( \theta = \log\left( \frac{p(1 - p_0)}{p_0(1 - p)} \right) \). 
+
+#### Paso 1: Log-verosimilitud
+
+Sabemos que la log-verosimilitud para una muestra de tamaño \(n\) es:
+
+\[
+\ell(p) = r \log(p) + n \log(1 - p)
+\]
+
+donde \( r = \sum_{i=1}^n x_i \) es la suma de las observaciones de la muestra.
+
+#### Paso 2: Derivada de la log-verosimilitud respecto a \( p \)
+
+La derivada de la log-verosimilitud con respecto a \( p \) es:
+
+\[
+\frac{\partial \ell(p)}{\partial p} = \frac{r}{p} - \frac{n}{1 - p}
+\]
+
+#### Paso 3: Derivada de \( \theta \) respecto a \( p \)
+
+Ahora, calculamos la derivada de \( \theta = \log\left( \frac{p(1 - p_0)}{p_0(1 - p)} \right) \) con respecto a \( p \):
+
+\[
+\frac{\partial \theta}{\partial p} = \frac{1 - p_0}{p(1 - p)}
+\]
+
+#### Paso 4: Estadístico \( Z \)
+
+El estadístico \( Z \) se obtiene usando la regla de la cadena para derivar la log-verosimilitud con respecto a \( \theta \):
+
+\[
+Z = \frac{\partial}{\partial \theta} \ell(\theta) = \frac{n - n p_0}{\sqrt{n p_0 (1 - p_0)}}
+\]
+
+#### Paso 5: Información de Fisher \( V \)
+
+La información de Fisher \( V \) es la varianza de \( Z \), y en este caso resulta ser:
+
+\[
+V = n p_0 (1 - p_0)
+\]
+
+### 2. Parámetro \( \theta = p - p_0 \)
+
+Ahora, consideramos la parametrización \( \theta = p - p_0 \).
+
+#### Paso 1: Log-verosimilitud
+
+De nuevo, la log-verosimilitud es la misma que en el caso anterior:
+
+\[
+\ell(p) = r \log(p) + n \log(1 - p)
+\]
+
+#### Paso 2: Derivada de la log-verosimilitud respecto a \( p \)
+
+La derivada respecto a \( p \) sigue siendo:
+
+\[
+\frac{\partial \ell(p)}{\partial p} = \frac{r}{p} - \frac{n}{1 - p}
+\]
+
+#### Paso 3: Derivada de \( \theta \) respecto a \( p \)
+
+Para esta parametrización, la derivada de \( \theta = p - p_0 \) con respecto a \( p \) es simplemente:
+
+\[
 \frac{\partial \theta}{\partial p} = 1
-$$
+\]
 
-El estadístico \( Z \) se define como:
-$$
-Z = \frac{\partial \ell(p)}{\partial p} \bigg|_{\theta=0}
-$$
+#### Paso 4: Estadístico \( Z \)
 
-Y la información \( V \) es:
-$$
-V = I(p)
-$$
+Dado que \( \frac{\partial \theta}{\partial p} = 1 \), el estadístico \( Z \) es:
 
-### Parametrización 3: \( \theta = \arcsin\sqrt{p} - \arcsin\sqrt{p_0} \)
-La derivada de \( \theta \) respecto a \( p \) es:
-$$
-\frac{\partial \theta}{\partial p} = \frac{1}{2\sqrt{p(1-p)}}
-$$
+\[
+Z = \frac{r - n p_0}{\sqrt{\frac{n}{p_0(1 - p_0)}}}
+\]
 
-El estadístico \( Z \) está dado por:
-$$
-Z = \frac{\partial \ell(p)}{\partial p} \bigg|_{\theta=0} \cdot \frac{\partial \theta}{\partial p}
-$$
+#### Paso 5: Información de Fisher \( V \)
 
-La información \( V \) se calcula como:
-$$
-V = \left(\frac{\partial \theta}{\partial p}\right)^2 I(p)
-$$
+La información de Fisher \( V \) es:
 
-4.
+\[
+V = \frac{n}{p_0 (1 - p_0)}
+\]
 
-```{r}
-# Parámetros iniciales
-p0 <- 0.3
-n <- 1000
-r <- 300  # Suma de éxitos observados, ajusta según simulación
+### 3. Parámetro \( \theta = \arcsin \sqrt{p} - \arcsin \sqrt{p_0} \)
 
-# Función para calcular información de Fisher
-fisher_information <- function(p, n) {
-  n / (p * (1 - p))
-}
+Finalmente, consideramos la parametrización \( \theta = \arcsin \sqrt{p} - \arcsin \sqrt{p_0} \).
 
-# Función para calcular Z y V en cada parametrización
-calculate_Z_V <- function(p, p0, n, r) {
-  I_p <- fisher_information(p, n)
-  
-  # Parametrización 1
-  Z1 <- (r - n * p0) / (p0 * (1 - p0))
-  V1 <- I_p * ((1 / p - 1 / (1 - p))^2)
-  
-  # Parametrización 2
-  Z2 <- (r - n * p0) / sqrt(p0 * (1 - p0))
-  V2 <- I_p
-  
-  # Parametrización 3
-  Z3 <- (r - n * p0) / (p0 * (1 - p0)) * (1 / (2 * sqrt(p * (1 - p))))
-  V3 <- I_p * (1 / (2 * sqrt(p * (1 - p))))^2
-  
-  list(Z1 = Z1, V1 = V1, Z2 = Z2, V2 = V2, Z3 = Z3, V3 = V3)
-}
+#### Paso 1: Log-verosimilitud
 
-# Ejemplo con p = 0.35
-result <- calculate_Z_V(0.35, p0, n, r)
-print(result)
+La log-verosimilitud para una muestra de tamaño \( n \) es:
 
-# Simulación de hipótesis
-simulate_hypothesis <- function(n, p, p0, alpha = 0.05) {
-  successes <- rbinom(1, n, p)
-  I_p <- fisher_information(p0, n)
-  Z <- (successes - n * p0) / sqrt(n * p0 * (1 - p0))
-  p_value <- 1 - pnorm(Z)
-  decision <- ifelse(p_value < alpha, "Rechazar H0", "No rechazar H0")
-  
-  list(Z = Z, p_value = p_value, decision = decision)
-}
+\[
+\ell(p) = r \log(p) + n \log(1 - p)
+\]
 
-# Simulación
-set.seed(123)  # Para reproducibilidad
-simulation_result <- simulate_hypothesis(n, 0.35, p0)
-print(simulation_result)
+#### Paso 2: Derivada de la log-verosimilitud respecto a \( p \)
 
-```
+La derivada de la log-verosimilitud respecto a \( p \) sigue siendo la misma:
+
+\[
+\frac{\partial \ell(p)}{\partial p} = \frac{r}{p} - \frac{n}{1 - p}
+\]
+
+#### Paso 3: Derivada de \( \theta \) respecto a \( p \)
+
+Para esta parametrización, la derivada de \( \theta = \arcsin \sqrt{p} - \arcsin \sqrt{p_0} \) con respecto a \( p \) es:
+
+\[
+\frac{\partial \theta}{\partial p} = \frac{1}{2 \sqrt{p(1 - p)}}
+\]
+
+#### Paso 4: Estadístico \( Z \)
+
+El estadístico \( Z \) es:
+
+\[
+Z = \frac{2(r - n p_0)}{\sqrt{n p_0 (1 - p_0)}}
+\]
+
+#### Paso 5: Información de Fisher \( V \)
+
+La información de Fisher \( V \) para esta parametrización es:
+
+\[
+V = 4n
+\]
+
+### Resumen
+
+Las expresiones obtenidas para los estadísticos \( Z \) y \( V \) para cada parametrización de \( \theta \) son las siguientes:
+
+1. Para \( \theta = \log\left( \frac{p(1 - p_0)}{p_0(1 - p)} \right) \):
+   \[
+   Z = \frac{n - n p_0}{\sqrt{n p_0 (1 - p_0)}}, \quad V = n p_0 (1 - p_0)
+   \]
+
+2. Para \( \theta = p - p_0 \):
+   \[
+   Z = \frac{r - n p_0}{\sqrt{\frac{n}{p_0 (1 - p_0)}}}, \quad V = \frac{n}{p_0 (1 - p_0)}
+   \]
+
+3. Para \( \theta = \arcsin \sqrt{p} - \arcsin \sqrt{p_0} \):
+   \[
+   Z = \frac{2(r - n p_0)}{\sqrt{n p_0 (1 - p_0)}}, \quad V = 4n
+   \]
+
 
 ## Contraste de hipótesis
 
+### 4.
 
 ```{r}
-# Configuración inicial
-set.seed(123) # Para reproducibilidad
+# Cálculo de Z y V para diferentes parametrizaciones
 
-# Función para calcular V según la parametrización
-calcular_V <- function(n) {
-  V <- 1 / n  # Ejemplo: varianza inversamente proporcional al tamaño muestral
-  return(V)
+# Función para calcular Z y V para cada parametrización
+calcular_Z_V <- function(r, n, p0, tipo_parametrizacion) {
+  # Caso 1: Parámetro θ = log(p(1 - p0) / (p0(1 - p)))
+  if (tipo_parametrizacion == "log_ratio") {
+    Z <- (n - n * p0) / sqrt(n * p0 * (1 - p0))
+    V <- n * p0 * (1 - p0)
+  }
+  
+  # Caso 2: Parámetro θ = p - p0
+  else if (tipo_parametrizacion == "diferencia") {
+    Z <- (r - n * p0) / sqrt(n / (p0 * (1 - p0)))
+    V <- n / (p0 * (1 - p0))
+  }
+  
+  # Caso 3: Parámetro θ = arcsin(sqrt(p)) - arcsin(sqrt(p0))
+  else if (tipo_parametrizacion == "arcsin") {
+    Z <- (2 * (r - n * p0)) / sqrt(n * p0 * (1 - p0))
+    V <- 4 * n
+  }
+  
+  # Retornar los resultados
+  return(list(Z = Z, V = V))
 }
 
-# Función para calcular Z
-calcular_Z <- function(theta, V) {
-  Z <- theta * V  # Definición del estadístico Z
-  return(Z)
-}
+# Definir parámetros de la muestra
+n <- 1000  # Tamaño de la muestra
+p0 <- 0.3  # Proporción bajo la hipótesis nula
+r <- 310   # Número de éxitos (por ejemplo, si 310 personas dijeron que prefieren estudiar de noche)
 
-# Parámetros iniciales
-n <- 100  # Tamaño muestral
-theta <- 0.05  # Valor del parámetro de interés
+# Calcular Z y V para cada parametrización
+resultados_log_ratio <- calcular_Z_V(r, n, p0, "log_ratio")
+resultados_diferencia <- calcular_Z_V(r, n, p0, "diferencia")
+resultados_arcsin <- calcular_Z_V(r, n, p0, "arcsin")
 
-# Cálculo de V
-V <- calcular_V(n)
-cat("El valor de V es:", V, "\n")
+# Mostrar resultados
+cat("Resultados para θ = log(p(1 - p0) / (p0(1 - p))):\n")
+cat("Z:", resultados_log_ratio$Z, "\n")
+cat("V:", resultados_log_ratio$V, "\n\n")
 
-# Cálculo de Z
-Z <- calcular_Z(theta, V)
-cat("El valor de Z es:", Z, "\n")
+cat("Resultados para θ = p - p0:\n")
+cat("Z:", resultados_diferencia$Z, "\n")
+cat("V:", resultados_diferencia$V, "\n\n")
 
+cat("Resultados para θ = arcsin(sqrt(p)) - arcsin(sqrt(p0)):\n")
+cat("Z:", resultados_arcsin$Z, "\n")
+cat("V:", resultados_arcsin$V, "\n")
 ```
-### Conclusión del ejercicio 4
 
-**Resultados clave:**
+### 5.
 
-1. **Cálculo de \( V \):**  
-   El valor de \( V \) calculado es **0.01**, lo cual indica que la variabilidad del modelo es baja debido al tamaño muestral (\( n = 100 \)). Esto refleja que al aumentar el tamaño de la muestra, la incertidumbre asociada a las estimaciones disminuye.
-
-2. **Cálculo de \( Z \):**  
-   El valor del estadístico \( Z \) es **\( 5 \times 10^{-4} \)**. Este resultado se obtuvo al multiplicar el valor de \( \theta = 0.05 \) por \( V = 0.01 \). El valor pequeño de \( Z \) sugiere que el efecto de \( \theta \) en esta parametrización es moderado.
-
----
-
-**Interpretación práctica:**  
 El cálculo de \( V \) y \( Z \) confirma que, para muestras suficientemente grandes (\( n \)), la distribución de \( Z \) tiende a ser aproximadamente Normal con media \( \theta \times V \) y varianza \( V \). Estos resultados son útiles para construir inferencias estadísticas, ya que permiten simplificar la complejidad del modelo original y trabajar con aproximaciones basadas en la distribución Normal.
 
 
@@ -285,16 +352,9 @@ if (p_valor < alpha) {
 4. **Decisión:**  
    Dado que el \( p \)-valor es menor que \( \alpha \), se **rechaza \( H_0 \)**. Por lo tanto, hay evidencia suficiente para aceptar \( H_1: p > 0.3 \).
 
----
 
-**Interpretación práctica:**  
-El análisis demuestra que la proporción observada (\( p = 0.35 \)) es significativamente mayor que \( 0.3 \). Esto sugiere que, en este contexto, la hipótesis alternativa (\( H_1 \)) es más plausible. Por lo tanto, hay evidencia estadística para concluir que la proporción verdadera es mayor al 30%, apoyando la afirmación de \( H_1 \).
-
-
------
-
-
-## Cálculo del Tamaño Muestral para el Contraste de Hipótesis
+## Ejercicio 6
+### Cálculo del Tamaño Muestral para el Contraste de Hipótesis
 
 En este análisis, queremos calcular el tamaño muestral \( n \) necesario para realizar un contraste de hipótesis bajo los siguientes supuestos:
 
@@ -373,57 +433,150 @@ donde:
 
 ```{r}
 
-# Parámetros del problema
-alpha <- 0.025    # Nivel de significancia
-beta <- 0.2       # Complemento de la potencia (1 - beta = 0.8)
-p0 <- 0.003       # Proporción bajo H0
-p <- 0.006        # Proporción deseada
-theta_R <- p - p0 # Diferencia mínima detectable
+# Función para calcular el tamaño muestral en las tres parametrizaciones
+sample_size <- function(p, p0, alpha, beta) {
+  # Percentiles z_alpha/2 y z_beta
+  z_alpha <- qnorm(1 - alpha / 2)
+  z_beta <- qnorm(1 - beta)
+  
+  # Parametrización 1
+  param1_n <- function(p, p0, z_alpha, z_beta) {
+    theta1 <- log((p * (1 - p0)) / (p0 * (1 - p0)))
+    numerador1 <- (z_alpha + z_beta)^2
+    denominador1 <-theta1^2 * p0*(1-p0)
+    n <- numerador1 / denominador1
+    return(n)
+  }
+  
+  # Parametrización 2
+  param2_n <- function(p, p0, z_alpha, z_beta) {
+    theta2 <- p - p0
+    numerador2 <- (z_alpha + z_beta)^2 * (p0 * (1-p0))
+    denominador2 <- theta2^2
+    n <- numerador2 / denominador2
+    return(n)
+  }
+  
+  # Parametrización 3
+  param3_n <- function(p, p0, z_alpha, z_beta) {
+    theta3 <- asin(sqrt(p)) - asin(sqrt(p0))
+    numerador3 <- (z_alpha + z_beta)^2
+    denominador3 <- theta3^2*4
+    n <- numerador3 / denominador3
+    return(n)
+  }
+  
+  # Calcular tamaños muestrales
+  n1 <- param1_n(p, p0, z_alpha, z_beta)
+  n2 <- param2_n(p, p0, z_alpha, z_beta)
+  n3 <- param3_n(p, p0, z_alpha, z_beta)
+  
+  return(list(
+    Parametrization_1 = n1,
+    Parametrization_2 = n2,
+    Parametrization_3 = n3
+  ))
+}
 
-# Cálculo de los percentiles de la distribución normal
-z_alpha <- qnorm(1 - alpha)  # Percentil para alpha
-z_beta <- qnorm(1 - beta)    # Percentil para beta
+# Valores específicos
+p <- 0.006       
+p0 <- 0.003      
+alpha <- 0.025  
+beta <- 0.2    
 
-# Fórmula para el tamaño muestral
-n <- (z_alpha + z_beta)^2 / theta_R^2
+# Cálculo del tamaño muestral
+result <- sample_size(p, p0, alpha, beta)
 
-# Resultado
-cat("El tamaño muestral necesario es:", ceiling(n), "\n")
+# Mostrar resultados
+print(result)
 
 
 ```
-
-
 ### 8. Estimación de errores tipo I y potencia del contraste
 
-En este apartado, se calculan dos métricas fundamentales para evaluar un contraste de hipótesis:
+Queremos estimar:
 
-- **Error tipo I (\( \alpha \)):**  
-  Es la probabilidad de rechazar la hipótesis nula (\( H_0 \)) cuando esta es verdadera. Esto ocurre cuando el valor observado del estadístico de prueba \( Z \) excede el valor crítico establecido por \( \alpha \).
+1. **Error tipo I (\( \alpha \))**:
+   - El error tipo I es la probabilidad de rechazar la hipótesis nula (\( H_0 \)) cuando esta es verdadera. 
+   - En este caso, el nivel de significancia está fijado en \( \alpha = 0.025 \), por lo que este valor es constante para todas las parametrizaciones.
 
-- **Potencia del contraste (\( 1 - \beta \)):**  
-  Es la probabilidad de rechazar \( H_0 \) cuando la hipótesis alternativa (\( H_1 \)) es verdadera. Una alta potencia indica que el contraste es sensible para detectar una diferencia significativa entre \( p_0 \) y el valor deseado (\( p \)).
+2. **Potencia (\( 1 - \beta \))**:
+   - La potencia es la probabilidad de rechazar \( H_0 \) cuando la hipótesis alternativa (\( H_1 \)) es verdadera. 
+   - Para calcular la potencia, necesitamos evaluar el estadístico \( Z \) bajo la distribución de \( H_1 \).
 
-Se utilizarán los valores de \( n \) calculados previamente y se evaluará el valor de \( Z \) bajo \( H_0 \) y \( H_1 \) para estimar estas probabilidades.
+El estadístico \( Z \) se calcula como:
+
+\[
+Z = \frac{\hat{p} - p_0}{\sqrt{\frac{p_0 (1 - p_0)}{n}}},
+\]
+
+donde:
+- \( \hat{p} \) es la proporción muestral bajo \( H_1 \) (en este caso \( \hat{p} = p \)),
+- \( p_0 = 0.003 \) es la proporción bajo \( H_0 \),
+- \( n \) es el tamaño muestral calculado para cada parametrización.
+
+La potencia se calcula como la probabilidad de que \( Z > Z_\alpha \) bajo \( H_1 \):
+
+\[
+\text{Potencia} = P(Z > Z_\alpha \mid H_1),
+\]
+
+donde:
+- \( Z_\alpha \) es el valor crítico correspondiente al nivel de significancia \( \alpha \) bajo la distribución normal estándar.
+
+Vamos a calcular:
+1. El error tipo I (\( \alpha \)) para cada parametrización, que se espera sea igual a 0.025.
+2. La potencia (\( 1 - \beta \)) para los tamaños muestrales calculados anteriormente (\( n_1, n_2, n_3 \)) en las tres parametrizaciones.
+
 
 ```{r}
-# Valores de Z bajo H0 y H1
-Z_H0 <- sqrt(n) * (p0 - p0) / sqrt(p0 * (1 - p0))
-Z_H1 <- sqrt(n) * (p - p0) / sqrt(p0 * (1 - p0))
+# Función para estimar error tipo I y potencia
+calculate_error_and_power <- function(n, p0, p, alpha) {
+  # Calcular Z_alpha (valor crítico bajo H0)
+  Z_alpha <- qnorm(1 - alpha / 2)
+  
+  # Error tipo I (ya conocido)
+  error_tipo_I <- alpha
+  
+  # Calcular estadístico Z bajo H1
+  Z_H1 <- (p - p0) / sqrt((p0 * (1 - p0)) / n)
+  
+  # Calcular potencia (1 - beta)
+  potencia <- 1 - pnorm(Z_alpha, mean = Z_H1, sd = 1)
+  
+  return(list(
+    Error_Tipo_I = error_tipo_I,
+    Potencia = potencia
+  ))
+}
 
-# Error tipo I (bajo H0)
-alpha_real <- 1 - pnorm(Z_H0)
-cat("Error de tipo I (alpha):", alpha_real, "\n")
+# Tamaños muestrales calculados previamente
+n1 <- 6614.339  # Parametrización 1
+n2 <- 3158.841  # Parametrización 2
+n3 <- 4596.236  # Parametrización 3
 
-# Potencia del test (bajo H1)
-potencia <- pnorm(Z_H1)
-cat("Potencia del test:", potencia, "\n")
+# Valores conocidos
+p0 <- 0.003  # Proporción bajo H0
+p <- 0.006   # Proporción bajo H1
+alpha <- 0.025
+
+# Calcular errores y potencia para cada parametrización
+result_param1 <- calculate_error_and_power(n1, p0, p, alpha)
+result_param2 <- calculate_error_and_power(n2, p0, p, alpha)
+result_param3 <- calculate_error_and_power(n3, p0, p, alpha)
+
+# Mostrar resultados
+cat("Resultados para la Parametrización 1:\n")
+print(result_param1)
+
+cat("\nResultados para la Parametrización 2:\n")
+print(result_param2)
+
+cat("\nResultados para la Parametrización 3:\n")
+print(result_param3)
 
 ```
 
-
-
----
 
 ### 9. Contrastes adicionales: Chi-cuadrado y prueba exacta
 
@@ -456,5 +609,80 @@ cat("Prueba exacta binomial:\n")
 print(binom_result)
 
 ```
+
+
+### 10.
+
+Las **pruebas paramétricas** son aquellas que se basan en suposiciones sobre la distribución de los datos, como la normalidad o la homogeneidad de la varianza. 
+
+Sin embargo, en ciertas situaciones, estas suposiciones no se cumplen, lo que invalida la aplicación de pruebas paramétricas. Razones por las que las pruebas paramétricas pueden no ser adecuadas:
+
+#### Razones para Utilizar Pruebas No Paramétricas
+
+1. **Tamaño de muestra pequeño**:
+   Las pruebas paramétricas requieren un tamaño de muestra suficientemente grande para que las estimaciones sean precisas y la distribución muestral se aproxime a la normalidad. Con muestras pequeñas, las distribuciones pueden no ser normales, lo que invalida las pruebas paramétricas.
+
+2. **Distribución no normal**:
+   Las pruebas paramétricas asumen que los datos siguen una distribución normal. Si los datos no siguen una distribución normal (son sesgados o tienen colas pesadas), las pruebas paramétricas pueden producir resultados erróneos.
+
+3. **Escalas de medición no adecuadas**:
+   Las pruebas paramétricas requieren que los datos sean al menos de intervalo, es decir, que se pueda medir la distancia entre valores. Si los datos son de una escala nominal o ordinal, las pruebas paramétricas no son apropiadas.
+
+4. **Heterogeneidad en la varianza**:
+   Muchas pruebas paramétricas asumen homogeneidad de varianza (es decir, que las varianzas en los grupos son iguales). Si no se cumple, los resultados de las pruebas pueden no ser confiables.
+
+Cuando las suposiciones necesarias para las pruebas paramétricas no se cumplen, las **pruebas no paramétricas** son una opción adecuada. Estas pruebas no requieren suposiciones sobre la distribución de los datos, lo que las hace más flexibles y aplicables a una mayor variedad de situaciones.
+
+#### Pruebas No Paramétricas
+
+Son más flexibles y menos sensibles a valores atípicos y a la violación de los supuestos de normalidad.
+
+Algunas pruebas no paramétricas son:
+- **Prueba exacta binomial**: Utilizada para comparar una proporción observada con un valor de referencia cuando los datos son binomiales.
+- **Prueba de Kolmogorov-Smirnov**: Para comparar dos distribuciones.
+- **Prueba de Mann-Whitney**: Para comparar dos muestras independientes.
+- **Prueba de Kruskal-Wallis**: Para comparar más de dos muestras independientes.
+
+#### ¿Qué prueba no paramétrica utilizar para comparar una proporción con un valor de referencia?
+
+Para comparar una proporción observada en una muestra con un valor de referencia \( p_0 \) cuando no se cumplen los supuestos de pruebas paramétricas, utilizamos la **prueba exacta binomial**. Esta prueba es adecuada cuando tenemos datos binomiales (con dos posibles resultados, como éxito o fracaso) y queremos comparar la proporción de éxitos observados con una proporción teórica \( p_0 \).
+
+La hipótesis nula en esta prueba es que la proporción observada es igual a la proporción de referencia \( p_0 \), y la hipótesis alternativa puede ser que la proporción observada es mayor o menor que \( p_0 \).
+
+---
+
+#### Prueba Exacta Binomial en R
+
+- `x`: Es el número de éxitos observados en la muestra.
+- `n`: Es el tamaño de la muestra.
+- `p`: Es la proporción bajo la hipótesis nula \( p_0 \).
+- `alternative`: Define la hipótesis alternativa. Puede ser `"greater"` para probar si la proporción observada es mayor que \( p_0 \), `"less"` para probar si es menor, o `"two.sided"` para probar si es diferente.
+
+#### Ejemplo en R
+
+Supongamos que tenemos una muestra de 50 observaciones en la que 12 son éxitos. Queremos comparar la proporción observada con una proporción de referencia \( p_0 = 0.3 \). El código en R sería el siguiente:
+
+```{r}
+# Parámetros del problema
+n <- 50             # Tamaño de la muestra
+x <- 12             # Número de éxitos observados
+p0 <- 0.3           # Proporción bajo H0 (valor de referencia)
+alpha <- 0.05       # Nivel de significancia
+
+# Realizar la prueba exacta binomial
+resultado <- binom.test(x = x, n = n, p = p0, alternative = "greater")
+
+# Mostrar los resultados principales de la prueba
+cat("Resultados de la prueba exacta binomial:\n")
+print(resultado)
+
+# Interpretar los resultados basados en el p-valor
+if (resultado$p.value < alpha) {
+  cat("\nConclusión: Se rechaza H0. La proporción observada es significativamente mayor que", p0, ".\n")
+} else {
+  cat("\nConclusión: No se rechaza H0. No hay evidencia suficiente para concluir que la proporción es mayor que", p0, ".\n")
+}
+```
+
 
 

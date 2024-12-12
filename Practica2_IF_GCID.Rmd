@@ -354,7 +354,8 @@ if (p_valor < alpha) {
 
 
 ## Ejercicio 6
-### Cálculo del Tamaño Muestral para el Contraste de Hipótesis
+
+## Cálculo del Tamaño Muestral para el Contraste de Hipótesis
 
 En este análisis, queremos calcular el tamaño muestral \( n \) necesario para realizar un contraste de hipótesis bajo los siguientes supuestos:
 
@@ -363,19 +364,18 @@ En este análisis, queremos calcular el tamaño muestral \( n \) necesario para 
 
 Usamos el estadístico \( Z \) como herramienta de contraste, con un nivel de significancia \( \alpha \) y una potencia de \( 1 - \beta \). El procedimiento sigue los siguientes pasos:
 
----
 
 #### Fórmula General
 
 El tamaño muestral \( n \) se calcula a partir de la cantidad de información \( V \), que está relacionada directamente con \( n \). Para un contraste unilateral, la fórmula para \( V \) es:
 
 \[
-V = \frac{z_{\alpha} + z_{\beta}}{\theta_R^2},
+V = (((\frac{z_{\alpha}//2) + z_{\beta}}{\theta_R)})^2,
 \]
 
 donde:
 - \( z_{\alpha} \): Percentil de una distribución normal estándar correspondiente al nivel de significancia \( \alpha \).
-- \( z_{\beta} \): Percentil correspondiente a la potencia \( 1 - \beta \).
+- \( z_{\beta} \): Percentil correspondiente a la potencia \(100( 1 - \beta \)).
 - \( \theta_R \): Diferencia mínima que se desea detectar entre \( p \) y \( p_0 \) (es decir, \( \theta_R = p_{observado} - p_0 \)).
 
 Reorganizando para \( n \), dado que \( V = \frac{1}{n} \), obtenemos:
@@ -384,34 +384,15 @@ Reorganizando para \( n \), dado que \( V = \frac{1}{n} \), obtenemos:
 n = \frac{(z_{\alpha} + z_{\beta})^2}{\theta_R^2}.
 \]
 
----
+% Parametrización 1
+n = \frac{\left(z_{\alpha/2} + z_{\beta}\right)^2}{\log^2\left(\frac{p(1-p_0)}{p_0(1-p)}\right)}
 
-#### Implementación en R
+% Parametrización 2
+n = \frac{\left(z_{\alpha/2} + z_{\beta}\right)^2}{(p - p_0)^2}
 
-El siguiente código en R calcula el tamaño muestral necesario para este contraste. Se consideran valores estándar para \( \alpha \) y \( \beta \) (\( \alpha = 0.05 \), potencia \( 1 - \beta = 0.8 \)) y una diferencia mínima detectable \( \theta_R \).
+% Parametrización 3
+n = \frac{\left(z_{\alpha/2} + z_{\beta}\right)^2}{\left(\arcsin\sqrt{p} - \arcsin\sqrt{p_0}\right)^2}
 
-```{r}
-
-# Configuración inicial
-alpha <- 0.05  # Nivel de significancia
-beta <- 0.2    # Complemento de la potencia (1 - beta = 0.8)
-theta_R <- 0.05 # Diferencia mínima deseada (p_observado - p0)
-
-# Cálculo de los percentiles de la distribución Normal
-z_alpha <- qnorm(1 - alpha)  # Percentil para alpha
-z_beta <- qnorm(1 - beta)    # Percentil para beta
-
-# Fórmula para el tamaño muestral
-n <- (z_alpha + z_beta)^2 / theta_R^2
-
-# Resultados
-cat("El tamaño muestral necesario es:", ceiling(n), "\n")
-```
-El tamaño muestral n necesario para este contraste depende de los parámetros establecidos:
-
-Nivel de significancia (α=0.05),
-Potencia (1−β=0.8),
-Diferencia mínima detectable (θR=0.05).
 
 
 ### 7. Estimación del tamaño muestral necesario
